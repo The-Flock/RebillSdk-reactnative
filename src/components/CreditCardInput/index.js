@@ -1,8 +1,9 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
 import PropTypes from 'prop-types';
-import {View, Text, Image, TextInput, TouchableOpacity} from 'react-native';
+import {View, Text, Image, TextInput} from 'react-native';
 import Icons from '../../Icons';
 import Input from '../Input';
+import ButtonPay from '../ButtonPay';
 import CreditCardInputStyles from './styles';
 import useFieldFormatter from '../hooks/useFieldFormatter';
 import useFieldValidator from '../hooks/useFieldValidator';
@@ -19,9 +20,14 @@ const CreditCardInput = ({
   additionalButtonInputProps,
   additionalTextButtonInputProps,
   iconStyle,
+  labelButton,
   icon,
   placeholders,
   defaultValues,
+  customer,
+  cardHolder,
+  transaction,
+  onPay,
 }) => {
   const numberRef = useRef();
   const expiryRef = useRef();
@@ -40,16 +46,16 @@ const CreditCardInput = ({
   });
 
   useEffect(() => {
-    if (defaultValues) {
-      setValues(defaultValues);
-    }
-  }, [defaultValues]);
-
-  useEffect(() => {
     if (autoFocus) {
       numberRef.current.focus();
     }
   }, [autoFocus]);
+
+  useEffect(() => {
+    setValues({...defaultValues, customer, cardHolder, transaction});
+    setStatus(validateValues(defaultValues));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [transaction, cardHolder, customer, defaultValues]);
 
   const onBecomeValid = useCallback(
     _validateValues => {
@@ -74,29 +80,29 @@ const CreditCardInput = ({
     (text, field) => {
       const _formatValues = formatValues({...values, ...{[field]: text}});
       const _validateValues = validateValues(_formatValues);
-      setValues(_formatValues);
+      setValues({...values, ..._formatValues});
       setStatus(_validateValues);
       onBecomeValid(_validateValues);
     },
     [formatValues, validateValues, onBecomeValid, values],
   );
 
-  const handleOnFocus = useCallback((e, field) => {
-    setCurrentFocus(field);
-  }, []);
+  const handleOnFocus = useCallback((e, field) => setCurrentFocus(field), []);
 
   const _iconToShow = () => {
-    if (currentFocus === 'cvc' && values?.card.type === 'american-express') {
+    if (currentFocus === 'cvc' && values?.card?.type === 'american-express') {
       return 'cvc_amex';
     }
     if (currentFocus === 'cvc') {
       return 'cvc';
     }
-    if (values?.card.type) {
+    if (values?.card?.type) {
       return values?.card.type;
     }
     return 'placeholder';
   };
+
+  const handleOnPay = useCallback(() => onPay(values), [onPay, values]);
 
   const getProps = useCallback(
     field => {
@@ -167,32 +173,17 @@ const CreditCardInput = ({
           />
         </View>
       </View>
-      <TouchableOpacity
-        style={[
-          CreditCardInputStyles.buttonPay,
-          {
-            backgroundColor: status.valid
-              ? validButtonColor
-              : invalidButtonColor,
-          },
-        ]}
-        disabled={!status.valid}
-        {...additionalButtonInputProps}>
-        <Text
-          style={CreditCardInputStyles.buttonText}
-          {...additionalTextButtonInputProps}>
-          Pay
-        </Text>
-        {icon ? (
-          icon
-        ) : (
-          <Image
-            resizeMode="contain"
-            source={Icons.pay}
-            style={[CreditCardInputStyles.iconPay, iconStyle]}
-          />
-        )}
-      </TouchableOpacity>
+      <ButtonPay
+        status={status}
+        validButtonColor={validButtonColor}
+        invalidButtonColor={invalidButtonColor}
+        onPressPlay={handleOnPay}
+        icon={icon}
+        iconStyle={iconStyle}
+        labelButton={labelButton}
+        additionalButtonInputProps={additionalButtonInputProps}
+        additionalTextButtonInputProps={additionalTextButtonInputProps}
+      />
     </View>
   );
 };
@@ -214,6 +205,9 @@ CreditCardInput.defaultProps = {
   additionalButtonInputProps: {},
   additionalTextButtonInputProps: {},
   iconStyle: {},
+  customer: {},
+  cardHolder: {},
+  Transaction: {},
 };
 
 CreditCardInput.propTypes = {
@@ -236,6 +230,9 @@ CreditCardInput.propTypes = {
   ),
   iconStyle: Image.propTypes.style,
   icon: PropTypes.element,
+  customer: PropTypes.object,
+  cardHolder: PropTypes.object,
+  Transaction: PropTypes.object,
 };
 
 export default CreditCardInput;

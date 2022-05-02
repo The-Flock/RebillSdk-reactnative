@@ -25,7 +25,7 @@
   "jest": {
     "preset": "react-native",
     "transformIgnorePatterns": [
-      "node_modules/(?!(jest-)?react-native|@react-native-community|@staks)"
+      "node_modules/(?!(jest-)?react-native|@react-native-community|@rebill)"
     ]
   },
   "engines": {
