@@ -1,4 +1,4 @@
-import {FALLBACK_CARD} from '../../utils/Constants';
+import {FALLBACK_CARD} from '../utils/Constants';
 var valid = require('card-validator');
 
 const toStatus = validation => {

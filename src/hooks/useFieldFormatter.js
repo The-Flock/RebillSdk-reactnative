@@ -1,5 +1,5 @@
-import {removeNonNumber} from '../../utils/Utilities';
-import {FALLBACK_CARD} from '../../utils/Constants';
+import {removeNonNumber} from '../utils/Utilities';
+import {FALLBACK_CARD} from '../utils/Constants';
 var valid = require('card-validator');
 
 const limitLength = (string = '', maxLength) => string.substr(0, maxLength);

@@ -5,8 +5,8 @@ import Icons from '../../Icons';
 import Input from '../Input';
 import ButtonPay from '../ButtonPay';
 import CreditCardInputStyles from './styles';
-import useFieldFormatter from '../hooks/useFieldFormatter';
-import useFieldValidator from '../hooks/useFieldValidator';
+import useFieldFormatter from '../../hooks/useFieldFormatter';
+import useFieldValidator from '../../hooks/useFieldValidator';
 
 const CreditCardInput = ({
   autoFocus,
@@ -52,8 +52,11 @@ const CreditCardInput = ({
   }, [autoFocus]);
 
   useEffect(() => {
-    setValues({...defaultValues, customer, cardHolder, transaction});
-    setStatus(validateValues(defaultValues));
+    const _formatValues = formatValues({...defaultValues});
+    const _validateValues = validateValues(_formatValues);
+    setStatus(validateValues(_formatValues));
+    setStatus(_validateValues);
+    setValues({..._formatValues, customer, cardHolder, transaction});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [transaction, cardHolder, customer, defaultValues]);
 
