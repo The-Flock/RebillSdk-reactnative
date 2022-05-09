@@ -52,16 +52,6 @@ const CreditCardInputStyles = StyleSheet.create({
     height: 40,
     color: 'black',
   },
-  buttonPay: {
-    borderRadius: 4,
-    height: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 12,
-    flexDirection: 'row',
-  },
-  buttonText: {color: 'white', marginRight: 6},
-  iconPay: {width: 20, height: 20},
 });
 
 export default CreditCardInputStyles;

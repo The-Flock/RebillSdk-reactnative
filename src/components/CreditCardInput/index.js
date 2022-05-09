@@ -7,6 +7,7 @@ import ButtonPay from '../ButtonPay';
 import CreditCardInputStyles from './styles';
 import useFieldFormatter from '../../hooks/useFieldFormatter';
 import useFieldValidator from '../../hooks/useFieldValidator';
+import Rebill from '../../services/Rebill';
 
 const CreditCardInput = ({
   autoFocus,
@@ -27,14 +28,25 @@ const CreditCardInput = ({
   customer,
   cardHolder,
   transaction,
-  onPay,
+  organizationId,
+  elements,
+  orderId,
+  onChangePrice,
+  onFetchingPrice,
+  onCheckoutInProcess,
+  onSuccess,
+  onError,
 }) => {
+  const {getPrices, checkout} = Rebill(organizationId);
   const numberRef = useRef();
   const expiryRef = useRef();
   const cvcRef = useRef();
   const {formatValues} = useFieldFormatter();
   const {validateValues} = useFieldValidator();
   const [currentFocus, setCurrentFocus] = useState('');
+  const [totalPrice, setTotalPrice] = useState(0);
+  const [fetchingPrice, setFetchingPrice] = useState(false);
+  const [checkoutInProcess, setCheckoutInProcess] = useState(false);
   const [values, setValues] = useState();
   const [status, setStatus] = useState({
     valid: undefined,
@@ -46,6 +58,20 @@ const CreditCardInput = ({
   });
 
   useEffect(() => {
+    onFetchingPrice?.(fetchingPrice);
+  }, [fetchingPrice, onFetchingPrice]);
+
+  useEffect(() => {
+    onCheckoutInProcess?.(checkoutInProcess);
+  }, [checkoutInProcess, onCheckoutInProcess]);
+
+  useEffect(() => {
+    if (transaction?.prices) {
+      fetchPrices();
+    }
+  }, [fetchPrices, transaction?.prices]);
+
+  useEffect(() => {
     if (autoFocus) {
       numberRef.current.focus();
     }
@@ -53,12 +79,48 @@ const CreditCardInput = ({
 
   useEffect(() => {
     const _formatValues = formatValues({...defaultValues});
-    const _validateValues = validateValues(_formatValues);
-    setStatus(validateValues(_formatValues));
-    setStatus(_validateValues);
-    setValues({..._formatValues, customer, cardHolder, transaction});
+    if (defaultValues?.number?.length > 0) {
+      const _validateValues = validateValues(_formatValues);
+      setStatus(_validateValues);
+    }
+    setValues({
+      ..._formatValues,
+      customer,
+      cardHolder,
+      transaction,
+      organizationId,
+      elements,
+      orderId,
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [transaction, cardHolder, customer, defaultValues]);
+  }, [
+    transaction,
+    cardHolder,
+    customer,
+    defaultValues,
+    organizationId,
+    elements,
+    orderId,
+  ]);
+
+  useEffect(() => {
+    onChangePrice?.(totalPrice);
+  }, [onChangePrice, totalPrice]);
+
+  const fetchPrices = useCallback(async () => {
+    setFetchingPrice(true);
+    const result = await Promise.all(
+      transaction?.prices?.map(async i => {
+        const r = await getPrices(i.id);
+        if (r.response.ok) {
+          const total = Number(r.result.amount) * i.quantity;
+          return {id: i.id, total};
+        }
+      }),
+    );
+    setFetchingPrice(false);
+    setTotalPrice(result.map(i => i.total).reduce((a, b) => a + b));
+  }, [getPrices, transaction?.prices]);
 
   const onBecomeValid = useCallback(
     _validateValues => {
@@ -90,7 +152,7 @@ const CreditCardInput = ({
     [formatValues, validateValues, onBecomeValid, values],
   );
 
-  const handleOnFocus = useCallback((e, field) => setCurrentFocus(field), []);
+  const handleOnFocus = useCallback((_e, field) => setCurrentFocus(field), []);
 
   const _iconToShow = () => {
     if (currentFocus === 'cvc' && values?.card?.type === 'american-express') {
@@ -105,7 +167,31 @@ const CreditCardInput = ({
     return 'placeholder';
   };
 
-  const handleOnPay = useCallback(() => onPay(values), [onPay, values]);
+  const handleOnPay = useCallback(async () => {
+    setCheckoutInProcess(true);
+    const body = {
+      customer: {
+        ...values.customer,
+        card: {
+          cardHolder: cardHolder,
+          cardNumber: values.number.replaceAll(' ', ''),
+          securityCode: values.cvc,
+          expiration: {
+            month: values.expiry.split('/')[0],
+            year: values.expiry.split('/')[1],
+          },
+        },
+      },
+      prices: transaction?.prices?.map(i => i.id),
+    };
+    const r = await checkout(body);
+    if (r.response.ok) {
+      onSuccess?.(r?.result);
+    } else {
+      onError?.({code: r?.result?.statusCode, message: r?.result?.message});
+    }
+    setCheckoutInProcess(false);
+  }, [checkout, onError, onSuccess, values, transaction, cardHolder]);
 
   const getProps = useCallback(
     field => {
@@ -133,6 +219,7 @@ const CreditCardInput = ({
       values,
     ],
   );
+
   return (
     <View>
       <View
@@ -210,7 +297,10 @@ CreditCardInput.defaultProps = {
   iconStyle: {},
   customer: {},
   cardHolder: {},
-  Transaction: {},
+  transaction: {},
+  organizationId: '',
+  elements: '',
+  orderId: '',
 };
 
 CreditCardInput.propTypes = {
@@ -235,7 +325,13 @@ CreditCardInput.propTypes = {
   icon: PropTypes.element,
   customer: PropTypes.object,
   cardHolder: PropTypes.object,
-  Transaction: PropTypes.object,
+  transaction: PropTypes.object,
+  organizationId: PropTypes.string,
+  elements: PropTypes.string,
+  orderId: PropTypes.string,
+  onChangePrice: PropTypes.func,
+  onFetchingPrice: PropTypes.func,
+  onCheckoutInProcess: PropTypes.func,
 };
 
 export default CreditCardInput;
