@@ -178,18 +178,18 @@ const CreditCardInput = ({
           securityCode: values.cvc,
           expiration: {
             month: values.expiry.split('/')[0],
-            year: values.expiry.split('/')[1],
+            year: `${new Date().getFullYear().toString().substring(0, 2)}${
+              values.expiry.split('/')[1]
+            }`,
           },
         },
       },
-      prices: transaction?.prices?.map(i => i.id),
+      prices: transaction?.prices,
     };
     const r = await checkout(body);
-    if (r.response.ok) {
-      onSuccess?.(r?.result);
-    } else {
-      onError?.({code: r?.result?.statusCode, message: r?.result?.message});
-    }
+    r.response.ok
+      ? onSuccess?.(r?.result)
+      : onError?.({code: r?.result?.statusCode, message: r?.result?.message});
     setCheckoutInProcess(false);
   }, [checkout, onError, onSuccess, values, transaction, cardHolder]);
 
