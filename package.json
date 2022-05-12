@@ -34,10 +34,10 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/The-Flock/RebillSdk-reactnative"
   },
   "bugs": {
-    "url": ""
+    "url": "https://theflockco.atlassian.net/jira/software/projects/RS/issues"
   },
   "license": "MIT"
 }
