@@ -24,6 +24,8 @@ const CreditCardInput = ({
   icon,
   placeholders,
   defaultValues,
+  rebillSdk,
+  onCheckoutInProcess,
   onPay,
 }) => {
   const numberRef = useRef();
@@ -32,6 +34,7 @@ const CreditCardInput = ({
   const {formatValues} = useFieldFormatter();
   const {validateValues} = useFieldValidator();
   const [currentFocus, setCurrentFocus] = useState('');
+  const [checkoutInProcess, setCheckoutInProcess] = useState(false);
   const [values, setValues] = useState();
   const [status, setStatus] = useState({
     valid: undefined,
@@ -41,6 +44,10 @@ const CreditCardInput = ({
       cvc: 'invalid',
     },
   });
+
+  useEffect(() => {
+    onCheckoutInProcess?.(checkoutInProcess);
+  }, [checkoutInProcess, onCheckoutInProcess]);
 
   useEffect(() => {
     if (autoFocus) {
@@ -105,8 +112,15 @@ const CreditCardInput = ({
     return 'placeholder';
   };
 
-  const handleOnPay = useCallback(
-    async () =>
+  const handleOnPay = useCallback(async () => {
+    if (rebillSdk) {
+      setCheckoutInProcess(true);
+      rebillSdk.setNumber(values.number);
+      rebillSdk.setExpiry(values.expiry);
+      rebillSdk.setCvc(values.cvc);
+      await rebillSdk.checkout();
+      setCheckoutInProcess(false);
+    } else {
       onPay?.({
         cardNumber: values.number.replaceAll(' ', ''),
         securityCode: values.cvc,
@@ -116,9 +130,9 @@ const CreditCardInput = ({
             values.expiry.split('/')[1]
           }`,
         },
-      }),
-    [onPay, values],
-  );
+      });
+    }
+  }, [rebillSdk, onPay, values]);
 
   const getProps = useCallback(
     field => {
@@ -244,7 +258,8 @@ CreditCardInput.propTypes = {
   ),
   iconStyle: Image.propTypes.style,
   icon: PropTypes.element,
-  onPay: PropTypes.func,
+  onFetchingPrice: PropTypes.func,
+  onCheckoutInProcess: PropTypes.func,
 };
 
 export default CreditCardInput;
