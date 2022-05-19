@@ -57,6 +57,10 @@ class RebillSdk {
     this.expiry = expiry;
   };
 
+  setOrganizationId = (organizationId) => {
+    this.http = new Http(organizationId);
+  };
+
   setCallbacks = callbacks => {
     this.callbacks = callbacks;
   };
