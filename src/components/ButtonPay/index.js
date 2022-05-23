@@ -11,6 +11,8 @@ const ButtonPay = ({
   onPressPlay,
   icon,
   iconStyle,
+  buttonStyle,
+  buttonTextStyle,
   labelButton,
   additionalButtonInputProps,
   additionalTextButtonInputProps,
@@ -18,6 +20,7 @@ const ButtonPay = ({
   <TouchableOpacity
     style={[
       ButtonPayStyles.buttonPay,
+      buttonStyle,
       {
         backgroundColor: status.valid ? validButtonColor : invalidButtonColor,
       },
@@ -26,7 +29,7 @@ const ButtonPay = ({
     onPress={onPressPlay}
     {...additionalButtonInputProps}>
     <Text
-      style={ButtonPayStyles.buttonText}
+      style={[ButtonPayStyles.buttonText, buttonTextStyle]}
       {...additionalTextButtonInputProps}>
       {labelButton}
     </Text>
@@ -49,6 +52,8 @@ ButtonPay.defaultProps = {
   additionalButtonInputProps: {},
   additionalTextButtonInputProps: {},
   iconStyle: {},
+  buttonStyle: {},
+  buttonTextStyle: {},
   labelButton: 'Pay',
 };
 
@@ -63,6 +68,8 @@ ButtonPay.propTypes = {
     PropTypes.shape(TextInput.propTypes),
   ),
   iconStyle: Image.propTypes.style,
+  buttonStyle: View.propTypes.style,
+  buttonTextStyle: Text.propTypes.style,
   labelButton: PropTypes.string,
   icon: PropTypes.element,
 };

@@ -11,6 +11,8 @@ import useFieldValidator from '../../hooks/useFieldValidator';
 const CreditCardInput = ({
   autoFocus,
   inputStyle,
+  buttonStyle,
+  buttonTextStyle,
   validColor,
   invalidColor,
   placeholderColor,
@@ -211,6 +213,8 @@ const CreditCardInput = ({
         onPressPlay={handleOnPay}
         icon={icon}
         iconStyle={iconStyle}
+        buttonStyle={buttonStyle}
+        buttonTextStyle={buttonTextStyle}
         labelButton={labelButton}
         additionalButtonInputProps={additionalButtonInputProps}
         additionalTextButtonInputProps={additionalTextButtonInputProps}
@@ -242,6 +246,8 @@ CreditCardInput.propTypes = {
   autoFocus: PropTypes.bool,
   placeholders: PropTypes.object,
   inputStyle: Text.propTypes.style,
+  buttonStyle: View.propTypes.style,
+  buttonTextStyle: Text.propTypes.style,
   validColor: PropTypes.string,
   invalidColor: PropTypes.string,
   validButtonColor: PropTypes.string,
