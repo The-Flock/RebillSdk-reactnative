@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
 import PropTypes from 'prop-types';
-import {View, Text, Image, TextInput} from 'react-native';
+import {View, Text, Image, TextInput, TouchableOpacity} from 'react-native';
 import Icons from '../../Icons';
 import Input from '../Input';
 import ButtonPay from '../ButtonPay';
@@ -245,9 +245,15 @@ CreditCardInput.defaultProps = {
 CreditCardInput.propTypes = {
   autoFocus: PropTypes.bool,
   placeholders: PropTypes.object,
-  inputStyle: Text.propTypes.style,
-  buttonStyle: View.propTypes.style,
-  buttonTextStyle: Text.propTypes.style,
+  inputStyle: PropTypes.objectOf(
+    PropTypes.shape(Text.propTypes),
+  ),
+  buttonStyle: PropTypes.objectOf(
+    PropTypes.shape(TouchableOpacity.propTypes),
+  ),
+  buttonTextStyle: PropTypes.objectOf(
+    PropTypes.shape(Text.propTypes),
+  ),
   validColor: PropTypes.string,
   invalidColor: PropTypes.string,
   validButtonColor: PropTypes.string,
@@ -262,7 +268,9 @@ CreditCardInput.propTypes = {
   additionalTextButtonInputProps: PropTypes.objectOf(
     PropTypes.shape(TextInput.propTypes),
   ),
-  iconStyle: Image.propTypes.style,
+  iconStyle: PropTypes.objectOf(
+    PropTypes.shape(Image.propTypes),
+  ),
   icon: PropTypes.element,
   onFetchingPrice: PropTypes.func,
   onCheckoutInProcess: PropTypes.func,
