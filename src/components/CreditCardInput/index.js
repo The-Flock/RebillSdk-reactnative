@@ -115,7 +115,7 @@ const CreditCardInput = ({
   const handleOnPay = useCallback(async () => {
     if (rebillSdk) {
       setCheckoutInProcess(true);
-      rebillSdk.setNumber(values.number);
+      rebillSdk.setNumber(values.number.replaceAll(' ', ''));
       rebillSdk.setExpiry(values.expiry);
       rebillSdk.setCvc(values.cvc);
       await rebillSdk.checkout();
