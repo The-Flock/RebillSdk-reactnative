@@ -245,15 +245,9 @@ CreditCardInput.defaultProps = {
 CreditCardInput.propTypes = {
   autoFocus: PropTypes.bool,
   placeholders: PropTypes.object,
-  inputStyle: PropTypes.objectOf(
-    PropTypes.shape(Text.propTypes),
-  ),
-  buttonStyle: PropTypes.objectOf(
-    PropTypes.shape(TouchableOpacity.propTypes),
-  ),
-  buttonTextStyle: PropTypes.objectOf(
-    PropTypes.shape(Text.propTypes),
-  ),
+  inputStyle: Text.propTypes.style,
+  buttonStyle: View.propTypes.style,
+  buttonTextStyle: Text.propTypes.style,
   validColor: PropTypes.string,
   invalidColor: PropTypes.string,
   validButtonColor: PropTypes.string,

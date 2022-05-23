@@ -67,15 +67,9 @@ ButtonPay.propTypes = {
   additionalTextButtonInputProps: PropTypes.objectOf(
     PropTypes.shape(TextInput.propTypes),
   ),
-  iconStyle: PropTypes.objectOf(
-    PropTypes.shape(Image.propTypes),
-  ),
-  buttonStyle: PropTypes.objectOf(
-    PropTypes.shape(View.propTypes),
-  ),
-  buttonTextStyle: PropTypes.objectOf(
-    PropTypes.shape(Text.propTypes),
-  ),
+  iconStyle: PropTypes.objectOf(PropTypes.shape(Image.propTypes)),
+  buttonStyle: PropTypes.objectOf(PropTypes.shape(View.propTypes)),
+  buttonTextStyle: PropTypes.objectOf(PropTypes.shape(Text.propTypes)),
   labelButton: PropTypes.string,
   icon: PropTypes.element,
 };
