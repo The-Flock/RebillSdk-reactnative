@@ -1,12 +1,12 @@
 import React, {useEffect, useState, useRef, useCallback} from 'react';
-import PropTypes from 'prop-types';
-import {View, Text, Image, TextInput, TouchableOpacity} from 'react-native';
+import {View, Image} from 'react-native';
 import Icons from '../../Icons';
 import Input from '../Input';
 import ButtonPay from '../ButtonPay';
 import CreditCardInputStyles from './styles';
 import useFieldFormatter from '../../hooks/useFieldFormatter';
 import useFieldValidator from '../../hooks/useFieldValidator';
+import useCheckOut from '../../hooks/useCheckOut';
 
 const CreditCardInput = ({
   autoFocus,
@@ -35,6 +35,7 @@ const CreditCardInput = ({
   const cvcRef = useRef();
   const {formatValues} = useFieldFormatter();
   const {validateValues} = useFieldValidator();
+  const checkout = useCheckOut();
   const [currentFocus, setCurrentFocus] = useState('');
   const [checkoutInProcess, setCheckoutInProcess] = useState(false);
   const [values, setValues] = useState();
@@ -120,7 +121,7 @@ const CreditCardInput = ({
       rebillSdk.setNumber(values.number.replaceAll(' ', ''));
       rebillSdk.setExpiry(values.expiry);
       rebillSdk.setCvc(values.cvc);
-      await rebillSdk.checkout();
+      await checkout(rebillSdk);
       setCheckoutInProcess(false);
     } else {
       onPay?.({
@@ -134,6 +135,7 @@ const CreditCardInput = ({
         },
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rebillSdk, onPay, values]);
 
   const getProps = useCallback(
@@ -231,43 +233,10 @@ CreditCardInput.defaultProps = {
     cvc: 'CVC',
   },
   defaultValues: {number: '', card: {}, expiry: '', cvc: ''},
-  validColor: '',
   invalidColor: 'red',
   validButtonColor: 'black',
   invalidButtonColor: 'darkgray',
   placeholderColor: 'gray',
-  additionalInputsProps: {},
-  additionalButtonInputProps: {},
-  additionalTextButtonInputProps: {},
-  iconStyle: {},
-};
-
-CreditCardInput.propTypes = {
-  autoFocus: PropTypes.bool,
-  placeholders: PropTypes.object,
-  inputStyle: Text.propTypes.style,
-  buttonStyle: View.propTypes.style,
-  buttonTextStyle: Text.propTypes.style,
-  validColor: PropTypes.string,
-  invalidColor: PropTypes.string,
-  validButtonColor: PropTypes.string,
-  invalidButtonColor: PropTypes.string,
-  placeholderColor: PropTypes.string,
-  additionalInputsProps: PropTypes.objectOf(
-    PropTypes.shape(TextInput.propTypes),
-  ),
-  additionalButtonInputProps: PropTypes.objectOf(
-    PropTypes.shape(View.propTypes),
-  ),
-  additionalTextButtonInputProps: PropTypes.objectOf(
-    PropTypes.shape(TextInput.propTypes),
-  ),
-  iconStyle: PropTypes.objectOf(
-    PropTypes.shape(Image.propTypes),
-  ),
-  icon: PropTypes.element,
-  onFetchingPrice: PropTypes.func,
-  onCheckoutInProcess: PropTypes.func,
 };
 
 export default CreditCardInput;

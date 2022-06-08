@@ -1,28 +1,8 @@
 import Http from './http';
 
 class RebillSdk {
-  constructor(
-    organizationId,
-    customer,
-    cardHolder,
-    transaction,
-    elements,
-    orderId,
-    number,
-    cvc,
-    expiry,
-    callbacks,
-  ) {
+  constructor(organizationId) {
     this.http = new Http(organizationId);
-    this.customer = customer;
-    this.cardHolder = cardHolder;
-    this.transaction = transaction;
-    this.elements = elements;
-    this.orderId = orderId;
-    this.number = number;
-    this.cvc = cvc;
-    this.expiry = expiry;
-    this.callbacks = callbacks;
   }
 
   setCustomer = customer => {
@@ -57,15 +37,26 @@ class RebillSdk {
     this.expiry = expiry;
   };
 
-  setOrganizationId = (organizationId) => {
-    this.http = new Http(organizationId);
-  };
-
   setCallbacks = callbacks => {
     this.callbacks = callbacks;
   };
 
+  setAlias = async alias => {
+    this.alias = alias;
+  };
+
   checkout = async () => {
+    const rc = await this.http.get(`organization/alias/${this.alias}`);
+    if (
+      rc?.result?.compliance === false ||
+      rc?.result?.compliance === undefined
+    ) {
+      this.callbacks.onError?.({
+        code: 400,
+        message: 'Missing compliance or false',
+      });
+      return;
+    }
     const body = {
       customer: {
         ...this.customer,

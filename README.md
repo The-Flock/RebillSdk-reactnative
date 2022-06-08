@@ -11,8 +11,9 @@ npm install @rebill/sdk-reactnative
 ## Usage
 
 ```js
+
 import React, {useEffect, useState} from 'react';
-import {LogBox, StyleSheet, ActivityIndicator, Text} from 'react-native';
+import {StyleSheet, ActivityIndicator, Text, Button} from 'react-native';
 import {SafeAreaView} from 'react-native';
 import {CreditCardInput, RebillSdk} from '@rebill/sdk-reactnative';
 
@@ -75,15 +76,29 @@ const App = () => {
     onSuccess: r => setResult(r),
     onError: e => setError(e),
   });
-  checkout.getPrices();
+  checkout.setAlias('santitest2');
+
+  useEffect(() => {
+    checkout.getPrices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (checkoutInProcess) {
       setResult();
       setError();
     }
   }, [checkoutInProcess]);
+
+  const handleOnPressCheckout = async () => {
+    setCheckoutInProcess(true);
+    await checkout.checkout();
+    setCheckoutInProcess(false);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
+      <Button title="Ejecutar checkout" onPress={handleOnPressCheckout} />
       <CreditCardInput
         defaultValues={defaultValues}
         rebillSdk={checkout}
@@ -93,6 +108,7 @@ const App = () => {
         placeholderColor="darkgray"
         onPay={card => console.log(card)}
       />
+
       {checkoutInProcess ? <ActivityIndicator /> : <Text>{`${price}`}</Text>}
       {result && <Text>{`Result: ${JSON.stringify(result)}`}</Text>}
       {error && <Text>{`Error: ${JSON.stringify(error)}`}</Text>}
