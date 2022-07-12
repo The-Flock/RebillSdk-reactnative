@@ -21,6 +21,9 @@
     "react": "^16.13.1",
     "react-native": "^0.63.3"
   },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
   "jest": {
     "preset": "react-native",
     "transformIgnorePatterns": [
