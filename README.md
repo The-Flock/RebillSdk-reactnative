@@ -5,7 +5,7 @@ Module card for payments
 ## Installation
 
 ```sh
-npm install @rebill/sdk-reactnative
+npm install @the-flock/sdk-reactnative
 ```
 
 ## Usage
@@ -15,7 +15,7 @@ npm install @rebill/sdk-reactnative
 import React, {useEffect, useState} from 'react';
 import {StyleSheet, ActivityIndicator, Text, Button} from 'react-native';
 import {SafeAreaView} from 'react-native';
-import {CreditCardInput, RebillSdk} from '@rebill/sdk-reactnative';
+import {CreditCardInput, RebillSdk} from '@the-flock/sdk-reactnative';
 
 const organizationId = '371c1f28-9a66-4d85-9bc5-b6e8dd433e94';
 const customer = {
@@ -70,7 +70,7 @@ const App = () => {
   checkout.setCustomer(customer);
   checkout.setCardHolder(cardHolder);
   checkout.setTransaction(transaction);
-  checkout.setElements('@rebill/sdk-reactnative');
+  checkout.setElements('@the-flock/sdk-reactnative');
   checkout.setCallbacks({
     onSuccessPrices: p => setPrice(p),
     onSuccess: r => setResult(r),

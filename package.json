@@ -1,5 +1,5 @@
 {
-  "name": "@rebill/sdk-reactnative",
+  "name": "@the-flock/sdk-reactnative",
   "description": "Module card for payments",
   "version": "0.0.1",
   "main": "src/index.js",
